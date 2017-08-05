@@ -30,42 +30,42 @@ public class CalcServlet extends HttpServlet {
         out.println("<body>");
 
         try {
-            // считываем параметры
+            // СЃС‡РёС‚С‹РІР°РµРј РїР°СЂР°РјРµС‚СЂС‹
             double one = Double.valueOf(request.getParameter("one"));
             double two = Double.valueOf(request.getParameter("two"));
             String operation = String.valueOf(request.getParameter("operation"));
 
-            // определение или создание сессии
+            // РѕРїСЂРµРґРµР»РµРЅРёРµ РёР»Рё СЃРѕР·РґР°РЅРёРµ СЃРµСЃСЃРёРё
             HttpSession session = request.getSession(true);
 
-            // получение типа операции
+            // РїРѕР»СѓС‡РµРЅРёРµ С‚РёРїР° РѕРїРµСЂР°С†РёРё
             OperationType operationType = OperationType.valueOf(operation.toUpperCase());
 
-            // калькуляция
+            // РєР°Р»СЊРєСѓР»СЏС†РёСЏ
             double result = calcResult(operationType, one, two);
 
-            //для новой сессии создаём новый список
+            //РґР»СЏ РЅРѕРІРѕР№ СЃРµСЃСЃРёРё СЃРѕР·РґР°С‘Рј РЅРѕРІС‹Р№ СЃРїРёСЃРѕРє
             if (session.isNew()) {
                 listOperations.clear();
             }
-//            else { // иначе получаем список из атрибутов сессии
+//            else { // РёРЅР°С‡Рµ РїРѕР»СѓС‡Р°РµРј СЃРїРёСЃРѕРє РёР· Р°С‚СЂРёР±СѓС‚РѕРІ СЃРµСЃСЃРёРё
 //                listOperations = (ArrayList<String>) session.getAttribute("formula");
 //            }
 
-            // добавление новой операции в список и атрибут сессии
+            // РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕР№ РѕРїРµСЂР°С†РёРё РІ СЃРїРёСЃРѕРє Рё Р°С‚СЂРёР±СѓС‚ СЃРµСЃСЃРёРё
             listOperations.add(one + " " + operationType.getStringValue() + " " + two + " = " + result);
             session.setAttribute("formula", listOperations);
 
-            // вывод всех операций
-            out.println("<h1>ID вашей сесии равен: " + session.getId() + "</h1>");
-            out.println("<h3>Список операций (всего: " + session.getId() + ") </h3>");
+            // РІС‹РІРѕРґ РІСЃРµС… РѕРїРµСЂР°С†РёР№
+            out.println("<h1>ID РІР°С€РµР№ СЃРµСЃРёРё СЂР°РІРµРЅ: " + session.getId() + "</h1>");
+            out.println("<h3>РЎРїРёСЃРѕРє РѕРїРµСЂР°С†РёР№ (РІСЃРµРіРѕ: " + session.getId() + ") </h3>");
 
             for (String oper : listOperations) {
                 out.println("<h3>" + oper + "</h3>");
             }
 
         } catch (Exception e) {
-            out.println("<h3>Возникла ошибка проверьте параметры!</h3>");
+            out.println("<h3>Р’РѕР·РЅРёРєР»Р° РѕС€РёР±РєР° РїСЂРѕРІРµСЂСЊС‚Рµ РїР°СЂР°РјРµС‚СЂС‹!</h3>");
         } finally {
             out.println("</body>");
             out.println("</html>");
