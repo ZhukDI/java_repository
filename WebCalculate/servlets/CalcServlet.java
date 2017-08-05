@@ -16,64 +16,76 @@ import java.util.ArrayList;
 @WebServlet(name = "CalcServlet", urlPatterns = {"/calcservlet"})
 public class CalcServlet extends HttpServlet {
 
-    private ArrayList<String> listOperations = new ArrayList();
+//    private ArrayList<String> listOperations = new ArrayList();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
 
+
+        response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+
         out.println("<html>");
         out.println("<head>");
-        out.println("<title>Calculate Servlet!</title>");
+        out.println("<title>Servlet CalcServlet</title>");
         out.println("</head>");
         out.println("<body>");
 
         try {
-            // считываем параметры
+
+            // считывание параметров
             double one = Double.valueOf(request.getParameter("one"));
             double two = Double.valueOf(request.getParameter("two"));
-            String operation = String.valueOf(request.getParameter("operation"));
+            String opearation = request.getParameter("operation");
 
             // определение или создание сессии
             HttpSession session = request.getSession(true);
 
             // получение типа операции
-            OperationType operationType = OperationType.valueOf(operation.toUpperCase());
+            OperationType operType = OperationType.valueOf(opearation.toUpperCase());
 
             // калькуляция
-            double result = calcResult(operationType, one, two);
+            double result = calcResult(operType, one, two);
 
-            //для новой сессии создаём новый список
+            ArrayList<String> listOperations;
+
+            // для новой сессии создаем новый список
             if (session.isNew()) {
-                listOperations.clear();
+                listOperations = new ArrayList<String>();
             }
-//            else { // иначе получаем список из атрибутов сессии
-//                listOperations = (ArrayList<String>) session.getAttribute("formula");
-//            }
+            else { // иначе получаем список из атрибутов сессии
+                listOperations = (ArrayList<String>) session.getAttribute("formula");
+            }
 
             // добавление новой операции в список и атрибут сессии
-            listOperations.add(one + " " + operationType.getStringValue() + " " + two + " = " + result);
+            listOperations.add(one + " " + operType.getStringValue() + " " + two + " = " + result);
             session.setAttribute("formula", listOperations);
 
+
             // вывод всех операций
-            out.println("<h1>ID вашей сесии равен: " + session.getId() + "</h1>");
-            out.println("<h3>Список операций (всего: " + session.getId() + ") </h3>");
+            out.println("<h1>ID вашей сессии равен: " + session.getId() + "</h1>");
+
+            out.println("<h3>Список операций (всего:" + listOperations.size() + ") </h3>");
 
             for (String oper : listOperations) {
                 out.println("<h3>" + oper + "</h3>");
             }
 
-        } catch (Exception e) {
-            out.println("<h3>Возникла ошибка проверьте параметры!</h3>");
+
+        } catch (Exception ex) {
+            // предупреждение пользователю в случае ошибки
+            out.println("<h3 style=\"color:red;\">Возникла ошибка. Проверьте параметры</h3>");
+            out.println("<h3>Имена параметров должны быть one, two, operation</h3>");
+            out.println("<h3>Operation должен принимать 1 из 4 значений: add, subtract, multiply, divide</h3>");
+            out.println("<h3>Значения one и two должны быть числами</h3>");
+            out.println("<h1>Пример</h1>");
+            out.println("<h3>?one=1&two=3&operation=add</h3>");
+
         } finally {
             out.println("</body>");
             out.println("</html>");
             out.close();
         }
-
-        out.println("</body>");
-        out.println("</html>");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
